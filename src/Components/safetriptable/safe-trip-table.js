@@ -124,27 +124,6 @@ const SafeTripTable = () => {
       headerName: "Trip Type",
       width: 150,
     },
-    // {
-    //   field: "livsts",
-    //   headerName: "Trip Status",
-    //   width: 150,
-
-    //   renderCell: (params) => (
-    //     <Typography
-    //       sx={{
-    //         textAlign: "center",
-    //         width: 80,
-    //         backgroundColor: params.row.livsts === 1 ? "#4caf50" : "#f44336", // Green for enabled, red for disabled
-    //         color: "white",
-    //         padding: "2px 6px",
-    //         borderRadius: "4px",
-    //         display: "inline-block", // Ensures the background fits the text
-    //       }}
-    //     >
-    //       {params.row.livsts === 1 ? "Started" : "End"}
-    //     </Typography>
-    //   ),
-    // },
 
     {
       field: "livsts",
@@ -197,6 +176,27 @@ const SafeTripTable = () => {
       width: 150,
       editable: true,
     },
+    // {
+    //   field: "livsts",
+    //   headerName: "Trip Status",
+    //   width: 150,
+
+    //   renderCell: (params) => (
+    //     <Typography
+    //       sx={{
+    //         textAlign: "center",
+    //         width: 80,
+    //         backgroundColor: params.row.livsts === 1 ? "#4caf50" : "#f44336", // Green for enabled, red for disabled
+    //         color: "white",
+    //         padding: "2px 6px",
+    //         borderRadius: "4px",
+    //         display: "inline-block", // Ensures the background fits the text
+    //       }}
+    //     >
+    //       {params.row.livsts === 1 ? "Started" : "End"}
+    //     </Typography>
+    //   ),
+    // },
 
     {
       field: "stm",
