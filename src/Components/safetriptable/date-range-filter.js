@@ -243,7 +243,7 @@ const DateRangeFilter = ({ dateFilter, setDateFilter }) => {
             position: "fixed",
             zIndex: 10,
             width: "580px",
-            background: "#fff",
+            background: "#ffff",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             height: "400px",
           }}

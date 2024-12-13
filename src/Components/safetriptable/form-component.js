@@ -9,12 +9,15 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const FormComponent = ({ setDrawerOpen }) => {
   const [formData, setFormData] = useState({
     name: "",
     gender: "",
-    dateOfBirth: "",
+    dateOfBirth: null,
     place: "",
     description: "",
   });
@@ -24,6 +27,13 @@ const FormComponent = ({ setDrawerOpen }) => {
     setFormData({
       ...formData,
       [name]: value,
+    });
+  };
+
+  const handleDateChange = (newValue) => {
+    setFormData({
+      ...formData,
+      dateOfBirth: newValue,
     });
   };
 
@@ -69,7 +79,7 @@ const FormComponent = ({ setDrawerOpen }) => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <TextField
                 label="Date of Birth"
                 type="date"
@@ -83,6 +93,23 @@ const FormComponent = ({ setDrawerOpen }) => {
                 }}
                 required
               />
+            </Grid> */}
+            <Grid item xs={12}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Date of Birth"
+                  value={formData.dateOfBirth}
+                  onChange={handleDateChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      required
+                      // sx={{ width: "100%" }}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
             </Grid>
 
             <Grid item xs={12}>
