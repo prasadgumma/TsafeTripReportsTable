@@ -1,0 +1,42 @@
+/* Apply grid layout to the entire DateRangePicker */
+.dateRangePickerClass {
+  display: grid; /* Use grid layout */
+  grid-template-columns: repeat(
+    7,
+    1fr
+  ); /* Create 7 equal columns (for days of the week) */
+  grid-template-rows: repeat(6, 1fr); /* Create 6 equal rows for weeks */
+  width: 100%; /* Full width */
+  height: 200px; /* Set height to be uniform */
+  font-size: 15px; /* Set a smaller font size */
+}
+
+/* Apply grid properties to the day cells */
+dateRangePickerClass .rdrDay {
+  height: 40px; /* Make sure each cell fills its grid space */
+  width: 18%; /* Make sure each cell fills its grid space */
+  border-radius: 5px; /* Optional: rounded corners for day cells */
+  background-color: #ffff; /* Light background color for day cells */
+}
+
+/* Apply padding for the quick range options (Today, Yesterday, etc.) */
+.dateRangePickerClass .rdrDefinedRangesItem {
+  display: inline-block;
+  padding: 10px 15px;
+  font-size: 12px; /* Smaller font size */
+  width: 100%; /* Equal width for range items */
+  text-align: center;
+}
+
+/* Apply padding for the defined ranges wrapper */
+.dateRangePickerClass .rdrDefinedRangesWrapper {
+  display: grid;
+  width: 150px;
+  /* Equal columns for each range option */
+  gap: 10px; /* Space between the range options */
+}
+
+/* Adjust styles for the date display area */
+.dateRangePickerClass .rdrDateDisplayWrapper {
+  display: none;
+}
