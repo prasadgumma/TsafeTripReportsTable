@@ -240,68 +240,68 @@ const DateRangeFilter = ({ dateFilter, setDateFilter }) => {
         <div
           className="custom-date-range-picker"
           style={{
-            position: "fixed",
+            position: "absolute",
             zIndex: 10,
             width: "580px",
             background: "#ffff",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            height: "400px",
+            height: "450px",
           }}
         >
-          <DateRangePicker
-            ranges={[selectionRange]}
-            onChange={handleSelect}
-            months={2}
-            direction="horizontal"
-            showSelectionPreview={true}
-            moveRangeOnFirstSelection={false}
-            rangeColors={["#3d91ff"]}
-            className="dateRangePickerClass"
-            style={{ width: "200px", Height: "100%" }}
-          />
-
-          {/* Custom Apply and Cancel buttons */}
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "right",
-              marginTop: "130px",
-              marginRight: "50px",
-              gap: 20,
-            }}
-          >
-            <Button
-              onClick={handleCancel}
+          <Box>
+            <DateRangePicker
+              ranges={[selectionRange]}
+              onChange={handleSelect}
+              months={2}
+              direction="horizontal"
+              showSelectionPreview={true}
+              moveRangeOnFirstSelection={false}
+              rangeColors={["#3d91ff"]}
+              className="dateRangePickerClass"
+              style={{ width: "200px", Height: 20 }}
+            />
+            <Box
               style={{
-                backgroundColor: "#f44336",
-                color: "white",
-                border: "none",
-                padding: "8px 16px",
-                cursor: "pointer",
-                borderRadius: "4px",
-                height: 34,
-                fontSize: 12,
-                width: 80,
+                display: "flex",
+                justifyContent: "right",
+                marginTop: "130px",
+                marginRight: "50px",
+                gap: 20,
               }}
             >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleApply}
-              style={{
-                backgroundColor: "#3d91ff",
-                color: "white",
-                border: "none",
-                padding: "8px 16px",
-                cursor: "pointer",
-                borderRadius: "4px",
-                height: 34,
-                fontSize: 12,
-                width: 80,
-              }}
-            >
-              Apply
-            </Button>
+              <Button
+                onClick={handleCancel}
+                style={{
+                  backgroundColor: "#f44336",
+                  color: "white",
+                  border: "none",
+                  padding: "8px 16px",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  height: 34,
+                  fontSize: 12,
+                  width: 80,
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleApply}
+                style={{
+                  backgroundColor: "#3d91ff",
+                  color: "white",
+                  border: "none",
+                  padding: "8px 16px",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  height: 34,
+                  fontSize: 12,
+                  width: 80,
+                }}
+              >
+                Apply
+              </Button>
+            </Box>
           </Box>
         </div>
       )}

@@ -1,42 +1,70 @@
 /* Apply grid layout to the entire DateRangePicker */
 .dateRangePickerClass {
-  display: grid; /* Use grid layout */
+  display: grid;
   grid-template-columns: repeat(
     7,
     1fr
-  ); /* Create 7 equal columns (for days of the week) */
-  grid-template-rows: repeat(6, 1fr); /* Create 6 equal rows for weeks */
-  width: 100%; /* Full width */
-  height: 200px; /* Set height to be uniform */
-  font-size: 15px; /* Set a smaller font size */
+  ); /* 7 equal columns for days of the week */
+  grid-template-rows: repeat(6, 1fr); /* 6 equal rows for weeks */
+  width: 100%; /* Full width, making it responsive */
+  height: 250px; /* Allow height to adjust dynamically */
+  font-size: 15px; /* Set a uniform font size */
+  gap: 5px; /* Add spacing between days for better visibility */
 }
 
-/* Apply grid properties to the day cells */
-dateRangePickerClass .rdrDay {
-  height: 40px; /* Make sure each cell fills its grid space */
-  width: 18%; /* Make sure each cell fills its grid space */
-  border-radius: 5px; /* Optional: rounded corners for day cells */
-  background-color: #ffff; /* Light background color for day cells */
-}
-
-/* Apply padding for the quick range options (Today, Yesterday, etc.) */
-.dateRangePickerClass .rdrDefinedRangesItem {
-  display: inline-block;
-  padding: 10px 15px;
-  font-size: 12px; /* Smaller font size */
-  width: 100%; /* Equal width for range items */
+/* Style each day cell */
+.dateRangePickerClass .rdrDay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px; /* Uniform height for each day cell */
+  border-radius: 4px; /* Rounded corners for day cells */
+  background-color: #ffffff; /* Light background color */
+  font-weight: bold;
   text-align: center;
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+  font-size: 12px;
 }
 
-/* Apply padding for the defined ranges wrapper */
+/* Highlight the current day or selected days */
+.dateRangePickerClass .rdrDay:hover {
+  background-color: #f0f0f0; /* Light hover effect */
+  cursor: pointer;
+}
+
+/* Style for quick range options (e.g., Today, Yesterday) */
+.dateRangePickerClass .rdrDefinedRangesItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px 0;
+  padding: 10px;
+  font-size: 13px;
+  width: 100%; /* Full width for range items */
+  border: 1px solid #ddd;
+  border-radius: 4px; /* Rounded corners for better aesthetics */
+  background-color: #f9f9f9; /* Subtle background */
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.dateRangePickerClass .rdrDefinedRangesItem:hover {
+  /* background-color: #e6e6e6; Slightly darker hover effect */
+  cursor: pointer;
+}
+
+/* Style the wrapper for quick range options */
 .dateRangePickerClass .rdrDefinedRangesWrapper {
-  display: grid;
-  width: 150px;
-  /* Equal columns for each range option */
-  gap: 10px; /* Space between the range options */
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between each range item */
+  width: auto;
+  padding: 10px;
+  /* background-color: #fafafa; Light background for the wrapper */
+  border-radius: 6px; /* Rounded edges */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
-/* Adjust styles for the date display area */
+/* Hide the date display area */
 .dateRangePickerClass .rdrDateDisplayWrapper {
-  display: none;
+  display: none; /* Completely hide */
 }
