@@ -11,7 +11,8 @@ import {
   Checkbox,
   CircularProgress,
 } from "@mui/material";
-import { Edit, Delete, Visibility } from "@mui/icons-material"; // Import icons
+import { Visibility } from "@mui/icons-material"; // Import icons
+import PlaceIcon from "@mui/icons-material/Place";
 import { DataGrid } from "@mui/x-data-grid";
 import { v4 as uuidv4 } from "uuid";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -19,11 +20,11 @@ import FilterDrawer from "./filter-drawer";
 import TableBottomActions from "./bottom-table-actions";
 import dayjs from "dayjs";
 import TripDetailsDrawer from "./trip-details-drawer";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
 
 const SafeTripTable = () => {
   const [data, setData] = useState([]);
+  const [datas, setDatas] = useState([]);
   const [checkedBox, setCheckedBox] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -69,7 +70,9 @@ const SafeTripTable = () => {
     {
       field: "id",
       headerName: "S.No",
+      headerAlign: "center",
       width: 100,
+      align: "center",
     },
     {
       field: "trip_gen_id",
@@ -117,7 +120,7 @@ const SafeTripTable = () => {
     {
       field: "dest",
       headerName: "Destination",
-      width: 150,
+      width: 200,
     },
     {
       field: "triptypnm",
@@ -128,109 +131,30 @@ const SafeTripTable = () => {
     {
       field: "livsts",
       headerName: "Trip Status",
+      width: 150,
+
       renderCell: (params) => (
         <Typography
           sx={{
             textAlign: "center",
             width: 80,
-            backgroundColor:
-              params.row.livsts === 1
-                ? "#4caf50"
-                : params.row.livsts === 2
-                ? "#f44336"
-                : "#e0e0e0", // Green for "Started", Red for "End", Grey for undefined
+            backgroundColor: params.row.livsts === 1 ? "#4caf50" : "#f44336", // Green for enabled, red for disabled
             color: "white",
             padding: "2px 6px",
             borderRadius: "4px",
             display: "inline-block", // Ensures the background fits the text
           }}
         >
-          {params.row.livsts === 1
-            ? "Started"
-            : params.row.livsts === 2
-            ? "End"
-            : "Unknown"}
+          {params.row.livsts === 1 ? "Started" : "End"}
         </Typography>
       ),
-      renderEditCell: (params) => {
-        return (
-          <select
-            value={params.value}
-            onChange={(e) => {
-              const value = e.target.value;
-              // Assuming a method to update the row's livsts field based on selection
-              params.api.getEditingCell().setValue(value);
-            }}
-          >
-            <option value={-1}>Any</option>
-            <option value={1}>Started</option>
-            <option value={2}>End</option>
-          </select>
-        );
-      },
-      type: "singleSelect",
-      valueOptions: [
-        { value: 1, label: "Started" },
-        { value: 2, label: "End" },
-      ],
-      width: 150,
-      editable: true,
     },
-    // {
-    //   field: "livsts",
-    //   headerName: "Trip Status",
-    //   width: 150,
-
-    //   renderCell: (params) => (
-    //     <Typography
-    //       sx={{
-    //         textAlign: "center",
-    //         width: 80,
-    //         backgroundColor: params.row.livsts === 1 ? "#4caf50" : "#f44336", // Green for enabled, red for disabled
-    //         color: "white",
-    //         padding: "2px 6px",
-    //         borderRadius: "4px",
-    //         display: "inline-block", // Ensures the background fits the text
-    //       }}
-    //     >
-    //       {params.row.livsts === 1 ? "Started" : "End"}
-    //     </Typography>
-    //   ),
-    // },
 
     {
       field: "stm",
       headerName: "Start Time",
       width: 180,
     },
-
-    // {
-    //   field: "stm",
-    //   headerName: "Date",
-    //   width: 150,
-    //   filterOperators: [
-    //     {
-    //       label: "Filter by Date",
-    //       value: "date",
-    //       getApplyFilterFn: (filterItem) => {
-    //         console.log(filterItem, "filterItem");
-    //         if (!filterItem.value) {
-    //           return null;
-    //         }
-
-    //         return ({ rows }) => console.log(rows, "row");
-    //       },
-    //       InputComponent: ({ item, applyValue }) => (
-    //         <input
-    //           type="date"
-    //           value={item.value || ""}
-    //           onChange={(e) => applyValue({ ...item, value: e.target.value })}
-    //           style={{ width: "100%" }}
-    //         />
-    //       ),
-    //     },
-    //   ],
-    // },
 
     {
       field: "etm",
@@ -247,6 +171,7 @@ const SafeTripTable = () => {
       headerName: "End Discription",
       width: 200,
     },
+
     {
       field: "trip_dur_mins",
       headerName: "Duration(Mins)",
@@ -261,19 +186,25 @@ const SafeTripTable = () => {
     {
       field: "action",
       headerName: "Actions",
-      width: 150,
+      width: 200,
 
       renderCell: (params) => (
-        <Box>
-          <IconButton color="primary" sx={{ mr: 1 }}>
-            <Edit />
-          </IconButton>
-          <IconButton color="error">
-            <Delete />
-          </IconButton>
-          <IconButton sx={{ mr: 1 }}>
-            <Visibility />
-          </IconButton>
+        <Box display={"flex"} justifyContent={"space-between"} gap={2}>
+          {/* View Icon with Name */}
+          <Box>
+            <IconButton color="primary">
+              <Visibility />
+            </IconButton>
+            <Typography sx={{ display: "inline" }}>View</Typography>
+          </Box>
+
+          <Box>
+            {/* Map Icon with Name */}
+            <IconButton color="primary">
+              <PlaceIcon />
+            </IconButton>
+            <Typography sx={{ display: "inline" }}>Map</Typography>
+          </Box>
         </Box>
       ),
     },
@@ -301,10 +232,10 @@ const SafeTripTable = () => {
       console.log(`${dateFilter[0]} / ${dateFilter[1]}`);
       try {
         const response = await axios.post(
-          // "http://192.168.21.126/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",
-          "http://192.168.21.71/devenv/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",
+          // "https://madhavan.dev.salesquared.in/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",  //Main
+          "http://192.168.21.71/devenv/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report", // Test
           {
-            lml: "894951d2ed1a413290f94a33b0dc12df",
+            lml: "6cb62f2760384da1b4a4fc20fc72b5ae",
             dt: `${today}\/${yesterday}`,
             tripsts: status,
             chkdt: "2",
@@ -336,10 +267,10 @@ const SafeTripTable = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        // "http://192.168.21.126/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",
-        "http://192.168.21.71/devenv/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",
+        // "https://madhavan.dev.salesquared.in/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",// Main
+        "http://192.168.21.71/devenv/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report", //Test
         {
-          lml: "894951d2ed1a413290f94a33b0dc12df",
+          lml: "6cb62f2760384da1b4a4fc20fc72b5ae",
           dt: `${dateFilter[0]}\/${dateFilter[1]}`,
           tripsts: status,
           chkdt: checkDate,
@@ -368,23 +299,6 @@ const SafeTripTable = () => {
   const handleTripIdClick = (tripId) => {
     setSelectedTripId(tripId);
     setDrawerOpen(true);
-  };
-
-  const toggleDrawer1 = () => {
-    setDrawerOpen(!drawerOpen);
-  };
-
-  // Delete Functionality...
-  const deleteHandle = (id) => {
-    if (window.confirm("Would you like to delete this row?")) {
-      axios.delete(`http://localhost:7779/members/${id}`).then(() => {
-        setData((prevData) => prevData.filter((member) => member.id !== id));
-      });
-    }
-  };
-
-  const handlePaginationChange = (newPaginationModel) => {
-    setPaginationModel(newPaginationModel);
   };
 
   // Export to CSV function
@@ -474,10 +388,12 @@ const SafeTripTable = () => {
     }
   };
 
-  const handleShowButton = () => {
-    setDrawerOpen(true);
-  };
+  console.log(paginationModel);
 
+  const handleRemove = () => {
+    setDrawerOpen(false); // Close the drawer after removal
+    setOpenDrawer(false);
+  };
   const showThebottomButtons = globalSelectedRows.length > 0;
   return (
     <LocalizationProvider>
@@ -511,13 +427,6 @@ const SafeTripTable = () => {
 
                     <Grid item>
                       <Box display="flex" alignItems="center" gap={2} m={2}>
-                        <Button
-                          variant="outlined"
-                          color="#787879"
-                          onClick={handleShowButton}
-                        >
-                          Show
-                        </Button>
                         <Button
                           variant="outlined"
                           color="#787879"
@@ -567,7 +476,7 @@ const SafeTripTable = () => {
                       disableSelectionOnClick={false}
                       rowSelectionModel={globalSelectedRows}
                       onRowSelectionModelChange={handleSelectionChange}
-                      pagination
+                      // pagination
                       loading={loading}
                       pageSize={paginationModel.pageSize}
                       page={paginationModel.page}
@@ -576,21 +485,28 @@ const SafeTripTable = () => {
                           paginationModel: { page: 0, pageSize: 25 },
                         },
                       }}
+                      getRowHeight={() => "auto"}
                       disableRowSelectionOnClick
                       pageSizeOptions={[5, 10, 25, { value: -1, label: "All" }]}
                       rowCount={data?.length} // Make sure this reflects the total number of members
-                      onPaginationModelChange={handlePaginationChange}
-                      paginationMode="client" // Client-side pagination
+                      // onPaginationModelChange={handlePaginationChange}
+                      // paginationMode="server" // Client-side pagination
                       sx={{
                         height: 600, // Set a fixed height
                         width: "100%",
+
+                        "& .MuiDataGrid-cell": {
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center", // Centers the content vertically and horizontally
+                        },
                         // overflowY: "auto", // Enable vertical scrolling
                         "& .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root":
                           {
                             color: "white",
                           },
                         "& .MuiDataGrid-columnHeader": {
-                          backgroundColor: "#787877",
+                          backgroundColor: "#000",
                           color: "white",
                           maxHeight: 70,
                         },
@@ -726,12 +642,15 @@ const SafeTripTable = () => {
           setDateFilter={setDateFilter}
           sendSearchText={sendSearchText}
           sendDateRange={sendDateRange}
+          onRemove={handleRemove}
         />
         <TripDetailsDrawer
           open={drawerOpen}
-          onClose={toggleDrawer1}
+          onClose={() => setDrawerOpen(false)}
+          // onClose={toggleDrawer1}
           tripId={selectedTripId}
           setDrawerOpen={setDrawerOpen}
+          onRemove={handleRemove}
         />
       </Box>
     </LocalizationProvider>

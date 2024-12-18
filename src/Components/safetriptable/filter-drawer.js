@@ -12,6 +12,7 @@ import {
   Drawer,
 } from "@mui/material";
 import DateRangeFilter from "./date-range-filter";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 const FilterDrawer = (props) => {
   const {
@@ -25,6 +26,7 @@ const FilterDrawer = (props) => {
     sendSearchType,
     sendSearchText,
     sendDateRange,
+    onRemove,
   } = props;
   const [status, setStatus] = useState("1");
   const [searchType, setSearchType] = useState("");
@@ -69,9 +71,18 @@ const FilterDrawer = (props) => {
   return (
     <Drawer anchor="right" open={openDrawer} onClose={toggleDrawer}>
       <Box p={2} width="580px">
-        <Typography variant="h6" color="textPrimary" mb={2}>
-          My Filters
-        </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6" color="textPrimary" mb={2}>
+            My Filters
+          </Typography>
+          <CancelIcon
+            sx={{ cursor: "pointer", mr: 1 }}
+            variant="contained"
+            color="#000"
+            onClick={onRemove} // Trigger remove functionality
+            // startIcon={<CancelIcon />}
+          />
+        </Box>
 
         <Grid container spacing={3}>
           <Grid item xs={12}>
