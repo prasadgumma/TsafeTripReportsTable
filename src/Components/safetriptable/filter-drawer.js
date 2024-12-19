@@ -25,7 +25,6 @@ const FilterDrawer = (props) => {
     sendStatus,
     sendSearchType,
     sendSearchText,
-    sendDateRange,
     onRemove,
   } = props;
   const [status, setStatus] = useState("1");
@@ -76,7 +75,7 @@ const FilterDrawer = (props) => {
             My Filters
           </Typography>
           <CancelIcon
-            sx={{ cursor: "pointer", mr: 1 }}
+            sx={{ cursor: "pointer", mr: 1, height: 70, width: 35 }}
             variant="contained"
             color="#000"
             onClick={onRemove} // Trigger remove functionality

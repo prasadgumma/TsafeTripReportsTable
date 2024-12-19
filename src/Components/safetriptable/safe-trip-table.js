@@ -11,7 +11,7 @@ import {
   Checkbox,
   CircularProgress,
 } from "@mui/material";
-import { Visibility } from "@mui/icons-material"; // Import icons
+import { Visibility } from "@mui/icons-material";
 import PlaceIcon from "@mui/icons-material/Place";
 import { DataGrid } from "@mui/x-data-grid";
 import { v4 as uuidv4 } from "uuid";
@@ -21,6 +21,7 @@ import TableBottomActions from "./bottom-table-actions";
 import dayjs from "dayjs";
 import TripDetailsDrawer from "./trip-details-drawer";
 import TextField from "@mui/material/TextField";
+import CustomPagination from "./customPagination";
 
 const SafeTripTable = () => {
   const [data, setData] = useState([]);
@@ -47,6 +48,30 @@ const SafeTripTable = () => {
     endDate: null,
   });
   const { trip_gen_id } = useParams();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25); // Default rows per page
+
+  const totalRows = data?.length || 0; // Ensure data is not undefined
+  const totalPages = pageSize === "All" ? 1 : Math.ceil(totalRows / pageSize);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedRows =
+    pageSize === "All" ? data : data?.slice(startIndex, startIndex + pageSize);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handlePageSizeChange = (event) => {
+    const value = event.target.value;
+    setPageSize(value);
+    setCurrentPage(1); // Reset to the first page
+  };
 
   const sendStatus = (data) => {
     setStatus(data);
@@ -343,7 +368,7 @@ const SafeTripTable = () => {
   const handleSelectionChange = (newSelection) => {
     console.log(newSelection, "newSelection");
     // Get the rows visible on the current page
-    const visibleRows = data.slice(
+    const visibleRows = paginatedRows.slice(
       paginationModel.page * paginationModel.pageSize,
       (paginationModel.page + 1) * paginationModel.pageSize
     );
@@ -365,7 +390,7 @@ const SafeTripTable = () => {
     if (typeof eventOrIds === "object" && eventOrIds.target) {
       // Handle "Select All" checkbox change
       const { checked } = eventOrIds.target;
-      const allIds = data.map((row) => row.id);
+      const allIds = paginatedRows.map((row) => row.id);
       if (checked) {
         console.log(checked, "Checked");
         // Select all rows across the filtered data
@@ -388,19 +413,19 @@ const SafeTripTable = () => {
     }
   };
 
-  console.log(paginationModel);
-
   const handleRemove = () => {
     setDrawerOpen(false); // Close the drawer after removal
     setOpenDrawer(false);
   };
   const showThebottomButtons = globalSelectedRows.length > 0;
+  const total = data?.length;
+
   return (
     <LocalizationProvider>
       <Box ml={3}>
         <Grid container>
           <Grid item xs={12}>
-            <Card sx={{ height: 735 }}>
+            <Card sx={{ height: 800 }}>
               <Box m={2.5}>
                 <Grid
                   container
@@ -416,7 +441,7 @@ const SafeTripTable = () => {
                     <Grid item xs={4} sx={{ ml: "25px", mt: "16px" }}>
                       <Typography
                         variant="h5"
-                        color="#787879"
+                        color="#000"
                         align="left"
                         fontFamily={"serif"}
                         width={"50%"}
@@ -429,7 +454,7 @@ const SafeTripTable = () => {
                       <Box display="flex" alignItems="center" gap={2} m={2}>
                         <Button
                           variant="outlined"
-                          color="#787879"
+                          color="#000"
                           onClick={exportToCSV}
                         >
                           Export to CSV
@@ -437,7 +462,7 @@ const SafeTripTable = () => {
 
                         <Button
                           variant="outlined"
-                          color="#787879"
+                          color="#000"
                           onClick={toggleDrawer}
                         >
                           My Filters
@@ -448,15 +473,15 @@ const SafeTripTable = () => {
                 </Grid>
                 <Box
                   sx={{
-                    height: 480, // Set a fixed height for consistent appearance
-                    position: "relative", // Ensures proper placement of the loader
+                    height: 250,
+                    position: "relative",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
                     mt: 8,
                     borderRadius: "1px",
 
-                    backgroundColor: "#f9f9f9", // Optional background color
+                    backgroundColor: "#f9f9f9",
                   }}
                 >
                   {loading ? (
@@ -469,76 +494,81 @@ const SafeTripTable = () => {
                       <CircularProgress />
                     </Box>
                   ) : (
-                    <DataGrid
-                      rows={data}
-                      columns={columns}
-                      checkboxSelection={true}
-                      disableSelectionOnClick={false}
-                      rowSelectionModel={globalSelectedRows}
-                      onRowSelectionModelChange={handleSelectionChange}
-                      // pagination
-                      loading={loading}
-                      pageSize={paginationModel.pageSize}
-                      page={paginationModel.page}
-                      initialState={{
-                        pagination: {
-                          paginationModel: { page: 0, pageSize: 25 },
-                        },
-                      }}
-                      getRowHeight={() => "auto"}
-                      disableRowSelectionOnClick
-                      pageSizeOptions={[5, 10, 25, { value: -1, label: "All" }]}
-                      rowCount={data?.length} // Make sure this reflects the total number of members
-                      // onPaginationModelChange={handlePaginationChange}
-                      // paginationMode="server" // Client-side pagination
-                      sx={{
-                        height: 600, // Set a fixed height
-                        width: "100%",
+                    <Box width={"100%"} mt={35}>
+                      <DataGrid
+                        rows={paginatedRows || []}
+                        columns={columns}
+                        checkboxSelection={true}
+                        disableSelectionOnClick={false}
+                        rowSelectionModel={globalSelectedRows}
+                        onRowSelectionModelChange={handleSelectionChange}
+                        loading={loading}
+                        hideFooter
+                        getRowHeight={() => "auto"}
+                        rowCount={data?.length}
+                        paginationMode="server" // Very Important Pagination
+                        sx={{
+                          height: 620,
+                          width: "100%",
 
-                        "& .MuiDataGrid-cell": {
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center", // Centers the content vertically and horizontally
-                        },
-                        // overflowY: "auto", // Enable vertical scrolling
-                        "& .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root":
-                          {
+                          "& .MuiDataGrid-cell": {
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          },
+
+                          "& .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root":
+                            {
+                              color: "white",
+                            },
+                          "& .MuiDataGrid-columnHeader": {
+                            backgroundColor: "#000",
+                            color: "white",
+                            maxHeight: 70,
+                          },
+                          "& .MuiDataGrid-columnHeaderTitle": {
                             color: "white",
                           },
-                        "& .MuiDataGrid-columnHeader": {
-                          backgroundColor: "#000",
-                          color: "white",
-                          maxHeight: 70,
-                        },
-                        "& .MuiDataGrid-columnHeaderTitle": {
-                          color: "white",
-                        },
-                        "& .MuiDataGrid-columnMenuIcon": {
-                          color: "#fffff !important",
-                        },
-                        "& .MuiDataGrid-menu": {
-                          backgroundColor: "#1976d2",
-                        },
-                        "& .MuiMenuItem-root": {
-                          color: "white",
-                        },
-                        "& .MuiDataGrid-menuItem-root:hover": {
-                          backgroundColor: "#1565c0",
-                        },
-                        "& .MuiDataGrid-sortIcon": {
-                          opacity: 1,
-                          color: "white",
-                        },
-                        "& .MuiDataGrid-menuIconButton": {
-                          opacity: 1,
-                          color: "white",
-                        },
-                        "& .MuiDataGrid-filterIcon": {
-                          opacity: 1,
-                          color: "white",
-                        },
-                      }}
-                    />
+                          "& .MuiDataGrid-columnMenuIcon": {
+                            color: "#fffff !important",
+                          },
+                          "& .MuiDataGrid-menu": {
+                            backgroundColor: "#1976d2",
+                          },
+                          "& .MuiMenuItem-root": {
+                            color: "white",
+                          },
+                          "& .MuiDataGrid-menuItem-root:hover": {
+                            backgroundColor: "#1565c0",
+                          },
+                          "& .MuiDataGrid-sortIcon": {
+                            opacity: 1,
+                            color: "white",
+                          },
+                          "& .MuiDataGrid-menuIconButton": {
+                            opacity: 1,
+                            color: "white",
+                          },
+                          "& .MuiDataGrid-filterIcon": {
+                            opacity: 1,
+                            color: "white",
+                          },
+                        }}
+                      />
+
+                      <CustomPagination
+                        currentPage={currentPage}
+                        totalRows={totalRows}
+                        pageSize={pageSize}
+                        handlePageSizeChange={handlePageSizeChange}
+                        handlePreviousPage={handlePreviousPage}
+                        handleNextPage={handleNextPage}
+                        totalPages={totalPages}
+                        data={data}
+                        total={total}
+                        startIndex={startIndex}
+                      />
+                    </Box>
                   )}
                 </Box>
                 <Box
@@ -549,7 +579,7 @@ const SafeTripTable = () => {
                     padding: 2,
                     backgroundColor: "#ffff",
                     borderTop: "1px solid #ccc",
-                    mt: 8,
+                    mt: 45,
                   }}
                 >
                   <span>
@@ -583,7 +613,7 @@ const SafeTripTable = () => {
                     mr: "530px",
                     borderRadius: "7px", // Set the border radius here
                     boxShadow: 3, // Optional: add shadow for better visibility
-                    mb: 6,
+                    mb: 7,
                   }}
                 >
                   <Button
