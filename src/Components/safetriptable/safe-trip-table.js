@@ -1,31 +1,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Typography,
   Button,
   Box,
   Grid,
   Card,
-  IconButton,
-  Checkbox,
   CircularProgress,
 } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
-import PlaceIcon from "@mui/icons-material/Place";
 import { DataGrid } from "@mui/x-data-grid";
-import { v4 as uuidv4 } from "uuid";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import FilterDrawer from "./filter-drawer";
-import TableBottomActions from "./bottom-table-actions";
 import dayjs from "dayjs";
 import TripDetailsDrawer from "./trip-details-drawer";
-import TextField from "@mui/material/TextField";
 import CustomPagination from "./customPagination";
+import ViewButton from "./view-link";
+import MapButton from "./map-link";
 
 const SafeTripTable = () => {
   const [data, setData] = useState([]);
-  const [datas, setDatas] = useState([]);
   const [checkedBox, setCheckedBox] = useState(true);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -47,8 +41,10 @@ const SafeTripTable = () => {
     startDate: null,
     endDate: null,
   });
-  const { trip_gen_id } = useParams();
-
+  const { trip_gen_id, tripId } = useParams();
+  console.log(tripId, "Trip");
+  const tripGenId = trip_gen_id;
+  console.log(tripGenId);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25); // Default rows per page
 
@@ -104,16 +100,25 @@ const SafeTripTable = () => {
       headerName: "Trip Id",
       width: 150,
       renderCell: (params) => (
-        <span
-          style={{
-            color: "blue",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
-          onClick={() => handleTripIdClick(params.value)}
+        // <span
+        //   style={{
+        //     color: "blue",
+        //     textDecoration: "underline",
+        //     cursor: "pointer",
+        //   }}
+        //   onClick={() => handleTripIdClick(params.value)}
+        // >
+        //   {params.value}
+        // </span>
+        <a
+          href={`trip_view?k=${btoa(
+            `${params.row.tripid}~${params.row.trip_genid}`
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          {params.value}
-        </span>
+          <Typography sx={{ display: "inline" }}>{params.value}</Typography>
+        </a>
       ),
     },
 
@@ -200,12 +205,12 @@ const SafeTripTable = () => {
     {
       field: "trip_dur_mins",
       headerName: "Duration(Mins)",
-      width: 100,
+      width: 200,
     },
     {
       field: "lastloctm",
       headerName: "Last Sync",
-      width: 100,
+      width: 180,
     },
 
     {
@@ -216,20 +221,27 @@ const SafeTripTable = () => {
       renderCell: (params) => (
         <Box display={"flex"} justifyContent={"space-between"} gap={2}>
           {/* View Icon with Name */}
-          <Box>
+          {/* <Box>
             <IconButton color="primary">
               <Visibility />
             </IconButton>
             <Typography sx={{ display: "inline" }}>View</Typography>
-          </Box>
-
-          <Box>
-            {/* Map Icon with Name */}
+          </Box> */}
+          <ViewButton
+            tripId={params.row.tripid}
+            tripGenId={params.row.trip_genid}
+          />
+          {/* <Box>
+            
             <IconButton color="primary">
               <PlaceIcon />
             </IconButton>
             <Typography sx={{ display: "inline" }}>Map</Typography>
-          </Box>
+          </Box> */}
+          <MapButton
+            tripId={params.row.tripid}
+            tripGenId={params.row.trip_genid}
+          />
         </Box>
       ),
     },
@@ -248,6 +260,14 @@ const SafeTripTable = () => {
 
     // Get yesterday's date
     const yesterday = dayjs().subtract(1, "day").format("DD-MM-YYYY");
+
+    const lmlValue = localStorage.getItem("lml"); // Replace 'lml' with the key used in localStorage
+
+    if (!lmlValue) {
+      console.error("LML value not found in localStorage");
+      return; // Optionally handle the case where 'lml' is not found
+    }
+
     setDateFilter([today, yesterday]);
     console.log(dateFilter, "DateFilter");
     // Log the dates to the console
@@ -257,10 +277,11 @@ const SafeTripTable = () => {
       console.log(`${dateFilter[0]} / ${dateFilter[1]}`);
       try {
         const response = await axios.post(
-          // "https://madhavan.dev.salesquared.in/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",  //Main
+          // "https://madhavan.dev.salesquared.in/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report", //Main
           "http://192.168.21.71/devenv/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report", // Test
           {
-            lml: "6cb62f2760384da1b4a4fc20fc72b5ae",
+            // lml: "6cb62f2760384da1b4a4fc20fc72b5ae",
+            lml: lmlValue,
             dt: `${today}\/${yesterday}`,
             tripsts: status,
             chkdt: "2",
@@ -292,7 +313,7 @@ const SafeTripTable = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        // "https://madhavan.dev.salesquared.in/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report",// Main
+        // "https://madhavan.dev.salesquared.in/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report", // Main
         "http://192.168.21.71/devenv/safe_travel_portal_ajax_apis/public/index.php/v1/trips_report", //Test
         {
           lml: "6cb62f2760384da1b4a4fc20fc72b5ae",
@@ -321,10 +342,10 @@ const SafeTripTable = () => {
     }
   };
 
-  const handleTripIdClick = (tripId) => {
-    setSelectedTripId(tripId);
-    setDrawerOpen(true);
-  };
+  // const handleTripIdClick = (tripId) => {
+  //   setSelectedTripId(tripId);
+  //   setDrawerOpen(true);
+  // };
 
   // Export to CSV function
   const exportToCSV = () => {
@@ -357,69 +378,14 @@ const SafeTripTable = () => {
     }
   };
 
-  const handleApplyClick = () => {
-    if (globalSelectedRows.length > 0) {
-      alert(`Selected row IDs: ${globalSelectedRows.join(", ")}`);
-    } else {
-      alert("No rows selected.");
-    }
-  };
-
-  const handleSelectionChange = (newSelection) => {
-    console.log(newSelection, "newSelection");
-    // Get the rows visible on the current page
-    const visibleRows = paginatedRows.slice(
-      paginationModel.page * paginationModel.pageSize,
-      (paginationModel.page + 1) * paginationModel.pageSize
-    );
-    const visibleRowIds = visibleRows.map((row) => row.id);
-    // Filter the selected IDs to include only those in visible rows
-    const updatedSelection = newSelection.filter((id) =>
-      visibleRowIds.includes(id)
-    );
-    setGlobalSelectedRows(updatedSelection);
-    // Update the "select all" checkbox state for the current page
-    if (visibleRowIds === 25) {
-      setCheckedBox(true);
-    } else {
-      setCheckedBox(false);
-    }
-  };
-
-  const handleSelection = (eventOrIds) => {
-    if (typeof eventOrIds === "object" && eventOrIds.target) {
-      // Handle "Select All" checkbox change
-      const { checked } = eventOrIds.target;
-      const allIds = paginatedRows.map((row) => row.id);
-      if (checked) {
-        console.log(checked, "Checked");
-        // Select all rows across the filtered data
-        setGlobalSelectedRows((prev) =>
-          Array.from(new Set([...prev, ...allIds]))
-        );
-        setGlobalSelectedRows(allIds); // Select all rows on the current page
-        setCheckedBox(checked);
-        alert(
-          `Action will be applied to all items selected by the filter  ${allIds.length} rows.`
-        );
-      } else {
-        // Deselect all rows
-        setGlobalSelectedRows(
-          (prev) => prev.filter((id) => !allIds.includes(id)) // Remove filtered rows from global selection
-        );
-        setCheckedBox((prev) => !prev); // Reset local selection for the current page
-        alert("Deselected all rows.");
-      }
-    }
-  };
-
   const handleRemove = () => {
     setDrawerOpen(false); // Close the drawer after removal
     setOpenDrawer(false);
   };
-  const showThebottomButtons = globalSelectedRows.length > 0;
-  const total = data?.length;
 
+  // const showThebottomButtons = globalSelectedRows.length > 0;
+  const total = data?.length;
+  console.log(globalSelectedRows);
   return (
     <LocalizationProvider>
       <Box ml={3}>
@@ -498,10 +464,8 @@ const SafeTripTable = () => {
                       <DataGrid
                         rows={paginatedRows || []}
                         columns={columns}
-                        checkboxSelection={true}
-                        disableSelectionOnClick={false}
+                        disableSelectionOnClick={true} // Disable row selection on click
                         rowSelectionModel={globalSelectedRows}
-                        onRowSelectionModelChange={handleSelectionChange}
                         loading={loading}
                         hideFooter
                         getRowHeight={() => "auto"}
@@ -571,7 +535,7 @@ const SafeTripTable = () => {
                     </Box>
                   )}
                 </Box>
-                <Box
+                {/* <Box
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -583,7 +547,7 @@ const SafeTripTable = () => {
                   }}
                 >
                   <span>
-                    Selected Rows:{" "}
+                    Selected Rows:
                     <strong>
                       {globalSelectedRows?.length === data?.length
                         ? "SelectedAll"
@@ -593,67 +557,8 @@ const SafeTripTable = () => {
                   <span>
                     Total Rows: <strong>{data?.length}</strong>
                   </span>
-                </Box>
+                </Box> */}
               </Box>
-
-              {showThebottomButtons && (
-                <Box
-                  key={uuidv4()}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "start",
-                    m: 2,
-                    position: "fixed",
-                    bottom: 5,
-                    width: "96%",
-                    backgroundColor: "#787877",
-                    gap: 2,
-                    zIndex: 100,
-                    // p: ,
-                    mr: "530px",
-                    borderRadius: "7px", // Set the border radius here
-                    boxShadow: 3, // Optional: add shadow for better visibility
-                    mb: 7,
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    color="white"
-                    onClick={handleApplyClick}
-                    sx={{ maxHeight: 35, mt: 1.2, color: "#ffff", ml: 2 }}
-                  >
-                    Apply
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="white"
-                    sx={{ maxHeight: 35, mt: 1.2, color: "#ffff" }}
-                    onClick={() => setGlobalSelectedRows([])} // Reset selection on cancel
-                  >
-                    Cancel
-                  </Button>
-                  <Box mb={0.5}>
-                    <TableBottomActions />
-                  </Box>
-
-                  <Box display={"flex"} mt={1} mb={1}>
-                    <Checkbox
-                      checked={checkedBox}
-                      onChange={handleSelection}
-                      value="checkedBox"
-                      sx={{
-                        color: "white", // Set the checkbox color to white
-                        "&.Mui-checked": {
-                          color: "white", // Set checked state color to white
-                        },
-                      }}
-                    />
-                    <Typography variant="h6" color="#ffff" sx={{ mt: 0.7 }}>
-                      For All
-                    </Typography>
-                  </Box>
-                </Box>
-              )}
             </Card>
           </Grid>
         </Grid>

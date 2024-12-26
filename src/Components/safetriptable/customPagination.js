@@ -35,6 +35,7 @@ const CustomPagination = ({
         onChange={handlePageSizeChange}
         size="small"
         variant="outlined"
+        sx={{ height: 35 }}
       >
         <MenuItem value={25}>25</MenuItem>
         <MenuItem value={50}>50</MenuItem>
@@ -55,14 +56,20 @@ const CustomPagination = ({
       {/* Pagination Controls */}
       {pageSize !== "All" && (
         <Box>
-          <IconButton onClick={handlePreviousPage} disabled={currentPage === 1}>
-            <ArrowBackIosIcon />
+          {" "}
+          <IconButton
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            sx={{ padding: "4px", fontSize: "20px" }}
+          >
+            <ArrowBackIosIcon sx={{ fontSize: "18px" }} />
           </IconButton>
           <IconButton
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
+            sx={{ padding: "4px", fontSize: "20px" }}
           >
-            <ArrowForwardIosIcon />
+            <ArrowForwardIosIcon sx={{ fontSize: "18px" }} />
           </IconButton>
         </Box>
       )}
